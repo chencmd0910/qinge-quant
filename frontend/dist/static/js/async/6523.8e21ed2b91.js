@@ -1,0 +1,1 @@
+"use strict";(self.rspackChunknewapi_web=self.rspackChunknewapi_web||[]).push([[6523],{7670(e,s,n){n.r(s),n.d(s,{component:()=>i});var p=n(95699),r=n(46542),c=n(5396);let i=function(){return(0,p.jsx)(c.gZ,{children:(0,p.jsx)("div",{className:"min-h-0 flex-1 px-4 pt-6 pb-4",children:(0,p.jsx)(r.s,{})})})}}}]);

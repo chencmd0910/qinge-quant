@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>39AI - API 文档</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--primary:#9373EE;--primary-light:#a88aff;--primary-dark:#7a5ad4;--bg:#f0f2f8;--card:#ffffff;--text:#1a1a2e;--text-secondary:#555;--text-muted:#888;--border:#e8eaf0;--code-bg:#f5f3ff;--shadow:0 2px 12px rgba(0,0,0,.06);--sidebar-w:280px;--header-h:56px;--radius:12px;--radius-sm:8px}
+@media(prefers-color-scheme:dark){:root{--bg:#0f0f1a;--card:#1a1a2e;--text:#e8e8f0;--text-secondary:#b0b0c0;--text-muted:#707080;--border:#2a2a3e;--code-bg:#1a1a2e;--shadow:0 2px 12px rgba(0,0,0,.3)}}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--header-h) + 20px)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh}
+.header{position:fixed;top:0;left:0;right:0;height:var(--header-h);z-index:100;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:12px;backdrop-filter:blur(12px);box-shadow:var(--shadow)}
+.header-logo{width:32px;height:32px;border-radius:8px;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700}
+.header-title{font-size:18px;font-weight:600;color:var(--text)}
+.header-title span{color:var(--primary)}
+.header-actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+.header-actions a{color:var(--text-secondary);text-decoration:none;font-size:14px;padding:6px 14px;border-radius:var(--radius-sm);transition:.2s}
+.header-actions a:hover{background:var(--primary);color:#fff}
+.btn-outline{border:1px solid var(--border);border-radius:var(--radius-sm)}
+.wrapper{display:flex;padding-top:var(--header-h);min-height:100vh}
+.sidebar{position:fixed;top:var(--header-h);left:0;bottom:0;width:var(--sidebar-w);background:var(--card);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0;z-index:50;transition:transform .3s}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.sidebar-group{margin-bottom:8px}
+.sidebar-group-title{padding:8px 20px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted)}
+.sidebar-item{display:block;padding:8px 20px;font-size:14px;color:var(--text-secondary);text-decoration:none;transition:.15s;cursor:pointer;border:none;background:none;width:100%;text-align:left}
+.sidebar-item:hover{color:var(--primary);background:rgba(147,115,238,.06)}
+.sidebar-item.active{color:var(--primary);font-weight:600;background:rgba(147,115,238,.1);border-right:3px solid var(--primary)}
+.main{margin-left:var(--sidebar-w);flex:1;padding:40px 48px;max-width:960px}
+.main section{margin-bottom:56px}
+.main h2{font-size:24px;font-weight:700;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--primary);display:inline-block}
+.main h3{font-size:18px;font-weight:600;margin:28px 0 12px;color:var(--text)}
+.main h4{font-size:15px;font-weight:600;margin:20px 0 8px;color:var(--text-secondary)}
+.main p{color:var(--text-secondary);margin-bottom:12px;line-height:1.8}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:16px;box-shadow:var(--shadow);transition:.2s}
+.card:hover{box-shadow:0 4px 20px rgba(147,115,238,.1)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:20px 0}
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;position:relative}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;margin-bottom:10px}
+.step-card h4{font-size:14px;margin:0 0 6px}
+.step-card p{font-size:13px;margin:0;color:var(--text-muted)}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead{background:var(--primary);color:#fff}
+th{padding:12px 16px;text-align:left;font-weight:600;white-space:nowrap}
+td{padding:10px 16px;border-bottom:1px solid var(--border);color:var(--text-secondary)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(147,115,238,.04)}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600}
+.tag-purple{background:rgba(147,115,238,.15);color:var(--primary)}
+.tag-green{background:rgba(82,196,26,.12);color:#52c41a}
+.tag-blue{background:rgba(24,144,255,.12);color:#1890ff}
+.tag-orange{background:rgba(250,173,20,.15);color:#d48806}
+.code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px;font-size:13px;font-family:'Fira Code','JetBrains Mono','Cascadia Code',monospace;overflow-x:auto;margin:12px 0;position:relative;color:var(--text)}
+.code-block .lang-badge{position:absolute;top:8px;right:12px;font-size:11px;color:var(--text-muted);text-transform:uppercase}
+code{background:rgba(147,115,238,.1);padding:2px 6px;border-radius:4px;font-size:.9em;color:var(--primary)}
+.faq-item{border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px;overflow:hidden}
+.faq-q{padding:14px 20px;cursor:pointer;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;background:var(--card);transition:.2s;border:none;width:100%;text-align:left;color:var(--text)}
+.faq-q:hover{background:rgba(147,115,238,.04)}
+.faq-q .arrow{transition:transform .3s;font-size:12px}
+.faq-q.active .arrow{transform:rotate(180deg)}
+.faq-a{padding:0 20px;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-a.open{max-height:500px;padding:0 20px 14px}
+.faq-a p{margin:8px 0;color:var(--text-secondary)}
+.endpoint{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+.endpoint-header{display:flex;align-items:center;padding:14px 20px;gap:12px;cursor:pointer;transition:.15s}
+.endpoint-header:hover{background:rgba(147,115,238,.04)}
+.method{display:inline-block;padding:2px 10px;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:.5px;min-width:56px;text-align:center;color:#fff}
+.method.post{background:#52c41a}
+.method.get{background:#1890ff}
+.method.delete{background:#ff4d4f}
+.method.put{background:#faad14;color:#333}
+.endpoint-url{font-family:'Fira Code',monospace;font-size:13px;color:var(--text)}
+.endpoint-desc{font-size:13px;color:var(--text-muted);margin-left:auto}
+.endpoint-body{padding:0 20px 0;max-height:0;overflow:hidden;transition:.3s}
+.endpoint-body.open{max-height:2000px;padding:0 20px 20px}
+.alert{padding:14px 18px;border-radius:var(--radius-sm);margin:16px 0;border-left:4px solid;font-size:14px}
+.alert-info{background:rgba(24,144,255,.08);border-color:#1890ff;color:var(--text-secondary)}
+.alert-warn{background:rgba(250,173,20,.1);border-color:#faad14;color:var(--text-secondary)}
+.alert-success{background:rgba(82,196,26,.08);border-color:#52c41a;color:var(--text-secondary)}
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin:16px 0}
+.tab-btn{padding:10px 20px;border:none;background:none;cursor:pointer;font-size:14px;font-weight:500;color:var(--text-muted);border-bottom:2px solid transparent;margin-bottom:-2px;transition:.2s}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-content{display:none;margin-top:12px}
+.tab-content.active{display:block}
+.sidebar-toggle{display:none;background:none;border:none;padding:6px;cursor:pointer;color:var(--text);font-size:20px;line-height:1}
+@media(max-width:768px){.sidebar-toggle{display:block}.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:24px 16px}.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:45}.sidebar-overlay.show{display:block}.steps{grid-template-columns:1fr 1fr}}
+.copy-btn{position:absolute;top:8px;right:12px;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;color:var(--text-muted);transition:.15s}
+.copy-btn:hover{color:var(--primary);border-color:var(--primary)}
+.hero{text-align:center;padding:32px 0 40px;margin-bottom:32px}
+.hero h1{font-size:36px;font-weight:800;margin-bottom:12px}
+.hero h1 span{color:var(--primary)}
+.hero p{font-size:16px;color:var(--text-secondary);max-width:600px;margin:0 auto 20px}
+.hero .badge{display:inline-block;padding:4px 16px;border-radius:20px;background:rgba(147,115,238,.12);color:var(--primary);font-size:13px;font-weight:600}
+</style>
+</head>
+<body>
+<header class="header">
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+  <div class="header-logo">39</div>
+  <div class="header-title"><span>39AI</span> API 文档</div>
+  <div class="header-actions">
+    <a href="https://39ai.cc" class="btn-outline">返回控制台</a>
+    <a href="https://39ai.cc" class="btn-outline">注册</a>
+  </div>
+</header>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">🚀 快速开始</div>
+    <button class="sidebar-item active" onclick="navigate('intro')">接入指南</button>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">💰 价格</div>
+    <button class="sidebar-item" onclick="navigate('pricing')">价格与充值</button>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">📋 参考</div>
+    <button class="sidebar-item" onclick="navigate('models')">模型列表</button>
+    <button class="sidebar-item" onclick="navigate('groups')">分组说明</button>
+    <button class="sidebar-item" onclick="navigate('api-ref')">API 参考</button>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">🛠 使用指南</div>
+    <button class="sidebar-item" onclick="navigate('clients')">客户端配置</button>
+    <button class="sidebar-item" onclick="navigate('dev')">开发接入</button>
+  </div>
+  <div class="sidebar-group">
+    <div class="sidebar-group-title">❓ 帮助</div>
+    <button class="sidebar-item" onclick="navigate('faq')">常见问题</button>
+  </div>
+</nav>
+<div class="main" id="mainContent">
+  <div class="hero">
+    <div class="badge">🎉 最新 v2.0 API</div>
+    <h1>39AI <span>API 文档</span></h1>
+    <p>基于 OpenAI 兼容协议，汇聚 GPT-5.x、Claude Opus 4.6/4.7、Gemini 3.x、DeepSeek V4 等主流模型。无需复杂配置，即开即用。</p>
+  </div>
+  <section id="intro">
+    <h2>🚀 接入指南</h2>
+    <h3>API 信息</h3>
+    <div class="card">
+      <table style="width:auto;border:none;">
+        <tr><td style="font-weight:600;">API 地址</td><td><code>https://39ai.cc</code></td></tr>
+        <tr><td style="font-weight:600;">API 版本</td><td>兼容 OpenAI API v1</td></tr>
+        <tr><td style="font-weight:600;">请求格式</td><td>JSON</td></tr>
+        <tr><td style="font-weight:600;">响应格式</td><td>标准 OpenAI 响应 / SSE (Stream)</td></tr>
+      </table>
+    </div>
+    <h3>快速开始</h3>
+    <div class="steps">
+      <div class="step-card"><div class="step-num">1</div><h4>注册账号</h4><p>在 39AI 官网注册并登录</p></div>
+      <div class="step-card"><div class="step-num">2</div><h4>创建令牌</h4><p>在控制台生成 API Key</p></div>
+      <div class="step-card"><div class="step-num">3</div><h4>配置客户端</h4><p>设置 Base URL 和 Key</p></div>
+      <div class="step-card"><div class="step-num">4</div><h4>开始调用</h4><p>发送请求，享受 AI 服务</p></div>
+    </div>
+    <h3>curl 示例</h3>
+    <div class="code-block"><span class="lang-badge">Shell</span>
+<pre>curl https://39ai.cc/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer sk-xxxxxxxxxxxxxxxxxxxxxx" \
+  -d '{
+    "model": "deepseek-v4-flash",
+    "messages": [{"role": "user", "content": "你好！"}],
+    "stream": true
+  }'</pre></div>
+    <div class="alert alert-info">💡 <strong>提示：</strong>所有请求需在 Header 中携带 <code>Authorization: Bearer &lt;your_api_key&gt;</code>。如遇白屏，请关闭代理或切换网络重试。</div>
+  </section>
+  <section id="pricing">
+    <h2>💰 价格与充值</h2>
+    <p>39AI 采用<strong>倍率计费</strong>模式，分组不同则倍率不同，倍率越高价格越高。所有模型输入输出价格同步各大模型官方计费逻辑，在官方基础上做折扣。</p>
+    <div class="card">
+      <h4>计费说明</h4>
+      <p>网站充值比例：<strong>1 RMB = 1 USD</strong></p>
+      <p><strong>1 倍率</strong> = 1 RMB = 1 USD（即冲 1 元可当官方的 1 美金使用）</p>
+      <p><strong>扣费逻辑：</strong>每次请求费用 = 倍率 × 模型官方计费（Token 消耗量按官方标准）</p>
+      <p>例如：2 倍率分组下，1 美金的官方消耗 = 扣 2 元</p>
+      <p>余额不足时请求会被拒绝，请及时充值。</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>分组</th><th>倍率</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-purple">国产全模型</span></td><td>0.8×</td><td>DeepSeek、GLM、Kimi、Minimax、Qwen 等国产模型（官方 3 折起）</td></tr>
+          <tr><td><span class="tag tag-blue">一个key全模型</span></td><td>3×</td><td>一个 Key 通调国内外各大模型，无需换 Key</td></tr>
+          <tr><td><span class="tag tag-green">企业推荐全模型分组</span></td><td>8×</td><td>全模型官 Key 中转，企业级稳定</td></tr>
+          <tr><td><span class="tag tag-orange">gpt-官方</span></td><td>5×</td><td>OpenAI 官 Key，智力与稳定性最优</td></tr>
+          <tr><td><span class="tag tag-purple">gpt-image</span></td><td>1×</td><td>GPT Image 系列图片生成</td></tr>
+          <tr><td><span class="tag tag-blue">deepseek</span></td><td>0.7×</td><td>DeepSeek 系列特价</td></tr>
+          <tr><td><span class="tag tag-green">claude-官方</span></td><td>5×</td><td>Claude 官 Key 中转</td></tr>
+          <tr><td><span class="tag tag-orange">default</span></td><td>2×</td><td>默认全模型分组，均衡性价比</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>充值说明</h3>
+    <div class="card">
+      <ol style="margin-left:20px;color:var(--text-secondary);">
+        <li>进入控制台 → <strong>钱包管理</strong>，支持自助充值</li>
+        <li>点击「账单」可查看充值记录</li>
+        <li>点击「自定义」可输入任意金额充值，如遇白屏请关掉梯子或切换网络重试</li>
+        <li>如需开票，联系客服提供「用户名 + 开票信息 + 开票金额」，低于 1000 元作为无票收入入账，高于 1000 元可申请开票（金额可累计）</li>
+      </ol>
+    </div>
+    <div class="alert alert-success">💳 支持支付宝、微信支付，进入控制台 → 充值即可。1 元起充，充值越多折扣力度越大！</div>
+  </section>
+  <section id="models">
+    <h2>📋 模型列表</h2>
+    <p>39AI 支持数百款模型，涵盖 GPT、Claude、Gemini、DeepSeek、Qwen 等全系列。可通过 <code>GET /v1/models</code> 或控制台「模型广场」实时获取最新完整列表。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>模型名称</th><th>分组</th><th>上下文</th><th>类型</th></tr></thead>
+        <tbody>
+          <tr><td><code>gpt-5.4</code></td><td><span class="tag tag-orange">一个key全模型</span></td><td>128K</td><td>聊天</td></tr>
+          <tr><td><code>gpt-5.4-codex</code></td><td><span class="tag tag-orange">一个key全模型</span></td><td>128K</td><td>编码</td></tr>
+          <tr><td><code>gpt-5.4-high</code></td><td><span class="tag tag-green">企业推荐</span></td><td>128K</td><td>聊天(高智力)</td></tr>
+          <tr><td><code>claude-opus-4-6</code></td><td><span class="tag tag-green">企业推荐</span></td><td>200K</td><td>聊天/推理</td></tr>
+          <tr><td><code>claude-sonnet-4-6</code></td><td><span class="tag tag-orange">一个key全模型</span></td><td>200K</td><td>聊天</td></tr>
+          <tr><td><code>deepseek-v4-flash</code></td><td><span class="tag tag-blue">deepseek</span></td><td>128K</td><td>聊天(快速)</td></tr>
+          <tr><td><code>deepseek-v4-pro</code></td><td><span class="tag tag-blue">deepseek</span></td><td>128K</td><td>聊天/推理</td></tr>
+          <tr><td><code>gemini-2.5-flash</code></td><td><span class="tag tag-orange">一个key全模型</span></td><td>1M</td><td>聊天</td></tr>
+          <tr><td><code>gemini-2.5-pro</code></td><td><span class="tag tag-green">企业推荐</span></td><td>1M</td><td>聊天(高智力)</td></tr>
+          <tr><td><code>gemini-3-flash</code></td><td><span class="tag tag-orange">一个key全模型</span></td><td>1M</td><td>聊天</td></tr>
+          <tr><td><code>gemini-3-pro-image-preview</code></td><td><span class="tag tag-orange">一个key全模型</span></td><td>1M</td><td>图像/聊天</td></tr>
+          <tr><td><code>qwen3-235b-a22b</code></td><td><span class="tag tag-blue">国产全模型</span></td><td>128K</td><td>聊天</td></tr>
+          <tr><td><code>qwen3-coder-plus</code></td><td><span class="tag tag-blue">国产全模型</span></td><td>128K</td><td>编码</td></tr>
+          <tr><td><code>gpt-image-2</code></td><td><span class="tag tag-purple">gpt-image</span></td><td>—</td><td>图片生成</td></tr>
+          <tr><td><code>veo3.1</code></td><td><span class="tag tag-purple">veo3.1</span></td><td>—</td><td>视频生成</td></tr>
+          <tr><td><code>sora-2</code></td><td><span class="tag tag-purple">sora2</span></td><td>—</td><td>视频生成</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="alert alert-warn">⚠️ <strong>模型配置时名字必须完全一致</strong>（区分大小写），建议在「模型广场」复制模型名称后调用。</div>
+  </section>
+  <section id="groups">
+    <h2>📁 分组说明</h2>
+    <p>分组不同，渠道不同、价格不同、智力与稳定性也不同。<strong>越贵越优质</strong>。选择适合自己产品的分组即可。<strong>高速、稳定、便宜是不可能三角。</strong></p>
+    <p>平台会优先将请求打到主分组，失败后自动重试到备选分组，从而提升整体成功率。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>分组名称</th><th>倍率</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-blue">国产全模型</span></td><td>0.8×</td><td>DeepSeek、GLM、Kimi、Minimax、Qwen 等国产模型，官方约 3 折起，极高性价比</td></tr>
+          <tr><td><span class="tag tag-orange">一个key全模型</span></td><td>3×</td><td>一个 API Key 通调国内外全系列模型（含 GPT、Claude、Gemini 等），无需换 Key</td></tr>
+          <tr><td><span class="tag tag-green">企业推荐全模型分组</span></td><td>8×</td><td>全模型官 Key 中转，适合企业级生产环境，优先调用官方直连</td></tr>
+          <tr><td><span class="tag tag-purple">gpt-官方</span></td><td>5×</td><td>OpenAI 官方 Key 转发，智力与性能最优，适合对稳定性要求极高的场景</td></tr>
+          <tr><td><span class="tag tag-purple">gpt-image</span></td><td>1×</td><td>GPT Image 1.5 / 2 系列图片生成</td></tr>
+          <tr><td><span class="tag tag-blue">deepseek</span></td><td>0.7×</td><td>DeepSeek V3/V4 系列特价通道，推理能力强</td></tr>
+          <tr><td><span class="tag tag-green">claude-官方</span></td><td>5×</td><td>Claude 全系列官 Key 转发</td></tr>
+          <tr><td><span class="tag tag-orange">default</span></td><td>2×</td><td>默认分组，均衡性价比，适合大多数场景</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <section id="api-ref">
+    <h2>🔌 API 参考</h2>
+    <p>39AI 兼容 OpenAI API 格式，以下为常用接口说明。</p>
+    <h3>Chat Completion</h3>
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.arrow').classList.toggle('active')">
+        <span class="method post">POST</span>
+        <span class="endpoint-url">/v1/chat/completions</span>
+        <span class="endpoint-desc">创建聊天补全 <span class="arrow" style="margin-left:8px;">▾</span></span>
+      </div>
+      <div class="endpoint-body">
+        <h4>请求参数</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td><code>model</code></td><td>string</td><td>是</td><td>模型名称，建议从模型广场复制</td></tr>
+              <tr><td><code>messages</code></td><td>array</td><td>是</td><td>对话消息列表</td></tr>
+              <tr><td><code>stream</code></td><td>boolean</td><td>否</td><td>是否流式输出，默认 false</td></tr>
+              <tr><td><code>temperature</code></td><td>number</td><td>否</td><td>采样温度，0-2，默认 1</td></tr>
+              <tr><td><code>max_tokens</code></td><td>integer</td><td>否</td><td>最大输出 Token 数</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4>示例</h4>
+        <div class="code-block"><span class="lang-badge">Shell</span>
+<pre>curl https://39ai.cc/v1/chat/completions \
+  -H "Authorization: Bearer sk-xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "deepseek-v4-flash",
+    "messages": [
+      {"role": "system", "content": "你是一个助手"},
+      {"role": "user", "content": "介绍一下39AI"}
+    ],
+    "temperature": 0.7,
+    "stream": true
+  }'</pre></div>
+      </div>
+    </div>
+    <h3>Image Generation</h3>
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.arrow').classList.toggle('active')">
+        <span class="method post">POST</span>
+        <span class="endpoint-url">/v1/images/generations</span>
+        <span class="endpoint-desc">生成图片 <span class="arrow" style="margin-left:8px;">▾</span></span>
+      </div>
+      <div class="endpoint-body">
+        <h4>请求参数</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td><code>model</code></td><td>string</td><td>是</td><td>gpt-image-2 / gpt-image-1.5</td></tr>
+              <tr><td><code>prompt</code></td><td>string</td><td>是</td><td>图片描述</td></tr>
+              <tr><td><code>n</code></td><td>integer</td><td>否</td><td>生成数量，默认 1</td></tr>
+              <tr><td><code>size</code></td><td>string</td><td>否</td><td>1024x1024 / 1792x1024 / 1024x1792 等</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4>示例</h4>
+        <div class="code-block"><span class="lang-badge">Shell</span>
+<pre>curl https://39ai.cc/v1/images/generations \
+  -H "Authorization: Bearer sk-xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-image-2",
+    "prompt": "A cute cat on a rainbow",
+    "n": 1,
+    "size": "1024x1024"
+  }'</pre></div>
+      </div>
+    </div>
+    <h3>模型列表</h3>
+    <div class="endpoint">
+      <div class="endpoint-header" onclick="this.nextElementSibling.classList.toggle('open'); this.querySelector('.arrow').classList.toggle('active')">
+        <span class="method get">GET</span>
+        <span class="endpoint-url">/v1/models</span>
+        <span class="endpoint-desc">获取可用模型列表 <span class="arrow" style="margin-left:8px;">▾</span></span>
+      </div>
+      <div class="endpoint-body">
+        <div class="code-block"><span class="lang-badge">Shell</span>
+<pre>curl https://39ai.cc/v1/models \
+  -H "Authorization: Bearer sk-xxx"</pre></div>
+      </div>
+    </div>
+  </section>
+  <section id="clients">
+    <h2>🛠 客户端配置</h2>
+    <p>39AI 兼容 OpenAI API，可在以下客户端中直接使用。</p>
+    <h3>Cherry Studio</h3>
+    <div class="card"><ol style="margin-left:20px;color:var(--text-secondary);">
+      <li>打开 Cherry Studio 设置 → 模型服务</li>
+      <li>选择 <strong>OpenAI API</strong></li>
+      <li>填写 API 地址：<code>https://39ai.cc</code></li>
+      <li>填写 API Key：你的 39AI 令牌</li>
+      <li>点击「添加模型」，输入你需要的模型名称</li>
+      <li>保存即可使用</li>
+    </ol></div>
+    <h3>Lobe Chat</h3>
+    <div class="card"><ol style="margin-left:20px;color:var(--text-secondary);">
+      <li>打开 Lobe Chat 设置 → 语言模型</li>
+      <li>选择 <strong>OpenAI</strong> 提供商</li>
+      <li>配置自定义 API 地址：<code>https://39ai.cc/v1</code></li>
+      <li>填写 API Key：你的 39AI 令牌</li>
+      <li>启用「自定义模型」并添加需要的模型</li>
+      <li>保存并开始对话</li>
+    </ol></div>
+    <h3>NextChat (ChatGPT Next Web)</h3>
+    <div class="card"><ol style="margin-left:20px;color:var(--text-secondary);">
+      <li>打开 NextChat 设置</li>
+      <li>接口地址：<code>https://39ai.cc</code></li>
+      <li>API Key：你的 39AI 令牌</li>
+      <li>选择模型即可使用</li>
+    </ol></div>
+    <h3>OpenCat</h3>
+    <div class="card"><ol style="margin-left:20px;color:var(--text-secondary);">
+      <li>打开 OpenCat 设置</li>
+      <li>API URL：<code>https://39ai.cc/v1</code></li>
+      <li>API Key：你的 39AI 令牌</li>
+      <li>保存并选择模型</li>
+    </ol></div>
+  </section>
+  <section id="dev">
+    <h2>💻 开发接入</h2>
+    <p>以下是使用 Python 和 Node.js 接入 39AI API 的示例代码。</p>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(this,'py')">Python</button>
+      <button class="tab-btn" onclick="switchTab(this,'node')">Node.js</button>
+    </div>
+    <div class="tab-content active" id="tab-py">
+      <div class="code-block"><span class="lang-badge">Python</span>
+<pre>from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-xxxxxxxxxxxxxxxxx",
+    base_url="https://39ai.cc"
+)
+
+response = client.chat.completions.create(
+    model="deepseek-v4-flash",
+    messages=[
+        {"role": "system", "content": "你是39AI助手"},
+        {"role": "user", "content": "你好！"},
+    ],
+    temperature=0.7,
+    stream=True,
+)
+
+for chunk in response:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")</pre></div>
+    </div>
+    <div class="tab-content" id="tab-node">
+      <div class="code-block"><span class="lang-badge">Node.js</span>
+<pre>import OpenAI from 'openai';
+
+const client = new OpenAI({
+  apiKey: 'sk-xxxxxxxxxxxxxxxxx',
+  baseURL: 'https://39ai.cc',
+});
+
+const response = await client.chat.completions.create({
+  model: 'deepseek-v4-flash',
+  messages: [
+    { role: 'system', content: '你是39AI助手' },
+    { role: 'user', content: '你好！' },
+  ],
+  temperature: 0.7,
+  stream: true,
+});
+
+for await (const chunk of response) {
+  process.stdout.write(chunk.choices[0]?.delta?.content || '');
+}</pre></div>
+    </div>
+  </section>
+  <section id="faq">
+    <h2>❓ 常见问题</h2>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">如何获取 API Key？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>登录 39AI 官网控制台 → API 令牌 → 创建新令牌。创建后请妥善保管，令牌仅创建时可见。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">倍率是如何计算的？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>1 倍率 = 1 元 = 1 美金。即充值 1 元可在官方计费中当作 1 美金使用。例如选择 2 倍率分组，官方消耗 1 美金时扣 2 元。分组倍率越高价格越高，但通常意味着更优质的渠道和更高的稳定性。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">为什么请求返回 401？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>请检查：1) API Key 是否正确；2) API Key 是否在 Header 中以 <code>Authorization: Bearer &lt;key&gt;</code> 格式传递；3) API Key 是否过期或已删除。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">充值后多久到账？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>支付宝/微信充值通常是即时到账。如遇白屏或延迟，请关掉代理或切换网络重试，仍不行则提供支付截图联系客服。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">低倍率和高倍率分组有什么区别？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>低倍率分组（如国产全模型 0.8×）性价比高，适合日常使用。高倍率分组（如官方 5×、企业推荐 8×）调用官方直连渠道，智力与稳定性最优。总结：99% 的场景低倍率就可以满足，只有对稳定性要求极高的场景才需要上高倍率。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">流式响应(Stream)如何启用？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>在请求体中设置 <code>"stream": true</code> 即可启用 SSE 流式响应。各客户端通常支持自动识别流式模式。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">支持多模态（图片识别）吗？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>支持。GPT-5.x、Claude Opus 4.6/4.7、Gemini 3.x 等模型均支持图片识别。在 messages 中使用 content 传入图片 URL 或 Base64 即可。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">余额不足会怎样？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>余额不足时请求会被拒绝。请及时充值以避免服务中断。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">如何开票？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>联系客服提供「用户名 + 开票信息 + 开票金额」即可。低于 1000 元作为无票收入入账，高于 1000 元可申请开票，金额可累计。</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">有请求频率限制吗？<span class="arrow">▾</span></button>
+      <div class="faq-a"><p>根据账户等级有所不同。基础用户每分钟 60 RPM，高级用户请查看控制台套餐详情。</p></div>
+    </div>
+  </section>
+</div>
+<script>
+function navigate(id) {
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const btn = document.querySelector(`.sidebar-item[onclick="navigate('${id}')"]`);
+  if (btn) btn.classList.add('active');
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+  closeSidebar();
+}
+function toggleFaq(btn) {
+  btn.classList.toggle('active');
+  btn.nextElementSibling.classList.toggle('open');
+}
+function switchTab(btn, tabId) {
+  btn.parentElement.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+document.getElementById('sidebarToggle').addEventListener('click', function(e){
+  e.stopPropagation();
+  const s = document.getElementById('sidebar');
+  if (s.classList.contains('open')) closeSidebar(); else { s.classList.add('open'); document.getElementById('sidebarOverlay').classList.add('show'); }
+});
+document.getElementById('sidebarOverlay').addEventListener('click', closeSidebar);
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+      const btn = document.querySelector(`.sidebar-item[onclick="navigate('${id}')"]`);
+      if (btn) btn.classList.add('active');
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' });
+document.querySelectorAll('section[id]').forEach(section => observer.observe(section));
+</script>
+</body>
+</html>

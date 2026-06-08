@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 图像生成 - 39AI</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f5f5;
+  color: #333;
+  min-height: 100vh;
+}
+.nav {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav a {
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+.nav a:hover { color: #6366f1; }
+.nav .logo { font-size: 20px; font-weight: 700; color: #6366f1; }
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+h1 { font-size: 24px; margin-bottom: 8px; }
+.sub { color: #888; margin-bottom: 32px; font-size: 14px; }
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #444; }
+select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+select:focus, textarea:focus { outline: none; border-color: #6366f1; }
+textarea { min-height: 100px; resize: vertical; font-family: inherit; }
+.row { display: flex; gap: 16px; }
+.row > * { flex: 1; }
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn:hover { background: #4f46e5; }
+.btn:disabled { background: #a5b4fc; cursor: not-allowed; }
+.btn-secondary {
+  background: #f3f4f6;
+  color: #333;
+  border: 1px solid #d1d5db;
+}
+.btn-secondary:hover { background: #e5e7eb; }
+.error { color: #ef4444; font-size: 14px; margin-top: 8px; }
+.success { color: #22c55e; font-size: 14px; margin-top: 8px; }
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+.progress-bar .fill {
+  height: 100%;
+  background: #6366f1;
+  border-radius: 3px;
+  transition: width 0.5s;
+  width: 0%;
+}
+.result-img {
+  max-width: 100%;
+  max-height: 500px;
+  border-radius: 8px;
+  margin-top: 16px;
+  display: none;
+}
+.timer { font-size: 13px; color: #888; margin-top: 8px; font-family: monospace; }
+.actions { display: flex; gap: 8px; margin-top: 12px; }
+.actions button {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.actions button:hover { background: #f3f4f6; }
+#status { font-size: 14px; margin-top: 8px; color: #555; }
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="/" class="logo">39AI</a>
+  <a href="/">主页</a>
+  <a href="/console">控制台</a>
+  <a href="/pricing">模型广场</a>
+  <a href="https://39ai.cc/docs">文档</a>
+</nav>
+
+<div class="container">
+  <h1>🎨 AI 图像生成</h1>
+  <p class="sub">输入提示词，AI 为您生成精美图片</p>
+
+  <div class="card">
+    <label for="model">模型选择</label>
+    <select id="model">
+      <option value="gpt-image-2">gpt-image-2</option>
+      <option value="dall-e-3">DALL-E 3</option>
+      <option value="gemini-2.5-flash-image">Gemini 2.5 Flash Image</option>
+      <option value="gemini-3-pro-image">Gemini 3 Pro Image</option>
+    </select>
+  </div>
+
+  <div class="card">
+    <label for="prompt">提示词</label>
+    <textarea id="prompt" placeholder="描述你想要生成的图片..."></textarea>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="size">分辨率</label>
+        <select id="size">
+          <option value="1024x1024">1024×1024（正方形）</option>
+          <option value="1792x1024">1792×1024（横版）</option>
+          <option value="1024x1792">1024×1792（竖版）</option>
+        </select>
+      </div>
+      <div>
+        <label for="n">生成数量</label>
+        <select id="n">
+          <option value="1">1 张</option>
+          <option value="2">2 张</option>
+          <option value="3">3 张</option>
+          <option value="4">4 张</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <button class="btn" id="generateBtn" onclick="generate()">🚀 生成图片</button>
+    <div class="progress-bar" id="progressBar">
+      <div class="fill" id="progressFill"></div>
+    </div>
+    <div id="status">就绪，输入提示词开始生成</div>
+    <div class="timer" id="timer"></div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <div id="images"></div>
+    <div class="actions" id="actions"></div>
+  </div>
+</div>
+
+<script>
+const API_URL = '/api/img-gen';
+let startTime, timerInterval;
+
+function generate() {
+  const prompt = document.getElementById('prompt').value.trim();
+  if (!prompt) {
+    document.getElementById('status').textContent = '⚠️ 请输入提示词';
+    return;
+  }
+
+  const model = document.getElementById('model').value;
+  const size = document.getElementById('size').value;
+  const n = parseInt(document.getElementById('n').value);
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 生成中...';
+
+  const fill = document.getElementById('progressFill');
+  const status = document.getElementById('status');
+  const timer = document.getElementById('timer');
+  const resultCard = document.getElementById('resultCard');
+  const imagesDiv = document.getElementById('images');
+  const actionsDiv = document.getElementById('actions');
+
+  resultCard.style.display = 'none';
+  imagesDiv.innerHTML = '';
+  actionsDiv.innerHTML = '';
+
+  // Timer
+  startTime = Date.now();
+  fill.style.width = '10%';
+  status.textContent = '⏳ 正在请求 API...';
+  timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    timer.textContent = `⏱ ${mins}:${secs.toString().padStart(2, '0')}`;
+  }, 100);
+
+  // Progress simulation
+  let progress = 10;
+  const progInterval = setInterval(() => {
+    if (progress < 90) {
+      progress += Math.random() * 5;
+      fill.style.width = Math.min(progress, 90) + '%';
+    }
+  }, 2000);
+
+  fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, prompt, n, size })
+  })
+  .then(r => r.json())
+  .then(data => {
+    clearInterval(progInterval);
+    clearInterval(timerInterval);
+    fill.style.width = '100%';
+
+    if (data.error) {
+      status.textContent = '❌ ' + (data.error.message || JSON.stringify(data.error));
+      btn.disabled = false;
+      btn.textContent = '🚀 生成图片';
+      return;
+    }
+
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    status.textContent = '✅ 生成成功！';
+    timer.textContent = `⏱ 耗时 ${elapsed} 秒`;
+
+    resultCard.style.display = 'block';
+    const urls = data.data?.map(d => d.url || d.b64_json) || [];
+
+    urls.forEach((url, i) => {
+      const img = document.createElement('img');
+      img.className = 'result-img';
+      img.style.display = 'block';
+      if (url.startsWith('http')) {
+        img.src = url;
+      } else {
+        img.src = 'data:image/png;base64,' + url;
+      }
+      imagesDiv.appendChild(img);
+
+      const dlBtn = document.createElement('button');
+      dlBtn.textContent = '⬇ 下载图片 ' + (i + 1);
+      dlBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = img.src;
+        a.download = `39ai-image-${i+1}.png`;
+        a.click();
+      };
+      actionsDiv.appendChild(dlBtn);
+    });
+
+    btn.disabled = false;
+    btn.textContent = '🚀 生成图片';
+  })
+  .catch(err => {
+    clearInterval(progInterval);
+    clearInterval(timerInterval);
+    status.textContent = '❌ 请求失败: ' + err.message;
+    btn.disabled = false;
+    btn.textContent = '🚀 生成图片';
+  });
+}
+</script>
+</body>
+</html>

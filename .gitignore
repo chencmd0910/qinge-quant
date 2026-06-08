@@ -1,0 +1,22 @@
+# Logs
+*.log
+*.log-*
+access.log
+error.log
+qinge-access.log
+qinge-error.log
+
+# Build artifacts
+index.130ed01ee0.js
+
+# Backups
+*.bak
+*.old
+dist.bak*
+dist.old*
+
+# Binary/data blobs
+image_h_b64.txt
+
+# Node modules
+node_modules/
