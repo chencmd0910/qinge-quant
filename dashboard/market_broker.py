@@ -127,14 +127,17 @@ def get_market_overview():
         latest_date = rs_idx.data[-1][0]
 
         # Get industry counts for total stock estimate
-        rs_sector = bs.query_stock_industry()
+        total_stocks = 5000
         industries = {}
-        if rs_sector.data:
-            for row in rs_sector.data:
-                ind = row[3] if len(row) > 3 else 'Other'
-                industries[ind] = industries.get(ind, 0) + 1
-
-        total_stocks = sum(industries.values())
+        try:
+            rs_sector = bs.query_stock_industry()
+            if rs_sector.data:
+                for row in rs_sector.data:
+                    ind = row[3] if len(row) > 3 else 'Other'
+                    industries[ind] = industries.get(ind, 0) + 1
+            total_stocks = sum(industries.values())
+        except Exception as e:
+            print("[market_broker] query_stock_industry failed: {}".format(e))
 
         # Estimate up/down from index changes
         sh_chg = float(rs_idx.data[-1][2])  # pctChg is index 2
